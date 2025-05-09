@@ -38,7 +38,7 @@
 - Supervisión general y reportes.
 
 **Quién lo usa:**
-- Personal de tu empresa que administra la plataforma.
+- Personal de la empresa que administra la plataforma.
 
 **Tecnología:**
 - Panel administrativo con acceso completo y funciones avanzadas.
