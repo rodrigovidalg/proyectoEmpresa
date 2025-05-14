@@ -8,6 +8,7 @@ import {
   updateDoc,
   doc,
   setDoc,
+  serverTimestamp,
 } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-firestore.js";
 import {
   getAuth,
@@ -45,7 +46,7 @@ form.addEventListener("submit", async (e) => {
   }
 
   try {
-    // Validar token en Firestore
+    // Validar token no usado
     const q = query(collection(db, "invitaciones"), where("token", "==", token), where("usado", "==", false));
     const querySnapshot = await getDocs(q);
 
@@ -57,11 +58,11 @@ form.addEventListener("submit", async (e) => {
     const invitacionDoc = querySnapshot.docs[0];
     const invitacionData = invitacionDoc.data();
 
-    // Crear usuario en Firebase Authentication
+    // Crear usuario
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const uid = userCredential.user.uid;
 
-    // Guardar usuario en colección usuarios con rol y supermercadoId
+    // Guardar usuario con rol y supermercadoId
     await setDoc(doc(db, "usuarios", uid), {
       rol: invitacionData.rol,
       supermercadoId: invitacionData.supermercadoId,
@@ -69,8 +70,12 @@ form.addEventListener("submit", async (e) => {
       nombre: "",
     });
 
-    // Marcar token como usado
-    await updateDoc(invitacionDoc.ref, { usado: true });
+    // Marcar token como usado y guardar fecha y email
+    await updateDoc(invitacionDoc.ref, {
+      usado: true,
+      fechaUso: serverTimestamp(),
+      usuarioEmail: email,
+    });
 
     mensajeDiv.textContent = "Registro exitoso. Ya puedes iniciar sesión.";
     form.reset();
